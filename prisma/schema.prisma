@@ -1,0 +1,87 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  RECEPCIONISTA
+  MEDICO
+  GERENCIA
+}
+
+enum EstadoCita {
+  PROGRAMADA
+  COMPLETADA
+  CANCELADA
+}
+
+model User {
+  id       Int     @id @default(autoincrement())
+  nombre   String?
+  apellido String?
+  email    String  @unique
+  password String
+  role     Role
+
+  @@map("users")
+}
+
+model Paciente {
+  id              Int      @id @default(autoincrement())
+  nombre          String
+  apellidoPaterno String   @map("apellido_paterno")
+  apellidoMaterno String?  @map("apellido_materno")
+  dni             String   @unique
+  email           String   @unique
+  telefono        String?
+  fechaNacimiento DateTime @map("fecha_nacimiento")
+  creacion        DateTime @default(now())
+  citas           Cita[]
+
+  @@map("pacientes")
+}
+
+model Medico {
+  id              Int          @id @default(autoincrement())
+  nombre          String
+  apellidoPaterno String       @map("apellido_paterno")
+  apellidoMaterno String?      @map("apellido_materno")
+  especialidadId  Int          @map("especialidad_id")
+  email           String       @unique
+  telefono        String?
+  creacion        DateTime     @default(now())
+  
+  especialidad    Especialidad @relation(fields: [especialidadId], references: [id])
+  citas           Cita[]
+
+  @@map("medicos")
+}
+
+model Especialidad {
+  id          Int      @id @default(autoincrement())
+  nombre      String   @unique
+  descripcion String?
+  medicos     Medico[]
+
+  @@map("especialidades") 
+}
+
+model Cita {
+  id         Int        @id @default(autoincrement())
+  pacienteId Int        @map("paciente_id")
+  medicoId   Int        @map("medico_id") 
+  fecha      DateTime   @db.Date
+  hora       DateTime   @db.Time(0)
+  estado     EstadoCita @default(PROGRAMADA)
+  creacion   DateTime   @default(now())
+
+
+  paciente   Paciente   @relation(fields: [pacienteId], references: [id])
+  medico     Medico     @relation(fields: [medicoId], references: [id])
+  @@unique([medicoId, fecha, hora])
+  @@map("citas")
+}
