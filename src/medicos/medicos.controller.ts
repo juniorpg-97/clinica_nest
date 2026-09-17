@@ -1,42 +1,49 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service.js';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  NotFoundException,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
+import { CreateMedicoDto } from './dto/create-medico.dto.js';
+import { UpdateMedicoDto } from './dto/update-medico.dto.js';
+import { MedicosService } from './medicos.service.js';
 
-@Injectable()
-export class MedicosService {
-  constructor(private readonly prisma: PrismaService) {}
+@Controller('medicos')
+export class MedicosController {
+  constructor(private readonly medicosService: MedicosService) {}
 
+  @Get()
   findAll() {
-    return this.prisma.medico.findMany();
+    return this.medicosService.findAll();
   }
 
-  findOne(id: number) {
-    return this.prisma.medico.findUnique({
-      where: {
-        id,
-      },
-    });
+  @Get(':id')
+  async findOne(@Param('id') id: string) {
+    const medico = await this.medicosService.findOne(Number(id));
+
+    if (!medico) {
+      throw new NotFoundException('Médico no encontrado');
+    }
+
+    return medico;
   }
 
-  create(data: any) {
-    return this.prisma.medico.create({
-      data,
-    });
+  @Post()
+  create(@Body() dto: CreateMedicoDto) {
+    return this.medicosService.create(dto);
   }
 
-  update(id: number, data: any) {
-    return this.prisma.medico.update({
-      where: {
-        id,
-      },
-      data,
-    });
+  @Put(':id')
+  update(@Param('id') id: string, @Body() dto: UpdateMedicoDto) {
+    return this.medicosService.update(Number(id), dto);
   }
 
-  remove(id: number) {
-    return this.prisma.medico.delete({
-      where: {
-        id,
-      },
-    });
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.medicosService.remove(Number(id));
   }
 }
