@@ -1,18 +1,22 @@
-import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module.js';
-
+import { AppModule, ObserveInstrument } from './app.module.js';
+import 'dotenv/config';
+import { ValidationPipe } from '@nestjs/common';
+import { PrismaExceptionFilter } from './prisma/prisma-exception.filter.js';
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    instrument: ObserveInstrument,
+  });
 
+  app.useGlobalFilters(new PrismaExceptionFilter());
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
+      forbidNonWhitelisted: true,
       transform: true,
     }),
   );
 
   await app.listen(process.env.PORT ?? 3000);
 }
-
-bootstrap();
+await bootstrap();
