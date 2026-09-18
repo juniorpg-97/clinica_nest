@@ -11,8 +11,14 @@ import {
 import { CreateMedicoDto } from './dto/create-medico.dto.js';
 import { UpdateMedicoDto } from './dto/update-medico.dto.js';
 import { MedicosService } from './medicos.service.js';
+import { UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
+import { RolesGuard } from '../auth/guards/roles.guard.js';
+import { Roles } from '../auth/decorators/roles.decorator.js';
 
 @Controller('medicos')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles('RECEPCIONISTA')
 export class MedicosController {
   constructor(private readonly medicosService: MedicosService) {}
 
