@@ -8,16 +8,18 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreatePacienteDto } from './dto/create-paciente.dto.js';
 import { UpdatePacienteDto } from './dto/update-paciente.dto.js';
 import { PacientesService } from './pacientes.service.js';
-
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { RolesGuard } from '../auth/guards/roles.guard.js';
 import { Roles } from '../auth/decorators/roles.decorator.js';
 
+@ApiTags('Pacientes')
+@ApiBearerAuth()
+@Controller('pacientes')
 @Controller('pacientes')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('RECEPCIONISTA')
