@@ -1,9 +1,15 @@
 import { NestFactory } from '@nestjs/core';
+import { ConfigService } from '@nestjs/config';
+
 import { LoggingInterceptor } from './common/logging.interceptor.js';
 import { AppModule, ObserveInstrument } from './app.module.js';
+
 import 'dotenv/config';
+
 import { ValidationPipe } from '@nestjs/common';
+
 import { PrismaExceptionFilter } from './prisma/prisma-exception.filter.js';
+
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
@@ -12,6 +18,7 @@ async function bootstrap() {
   });
 
   app.useGlobalFilters(new PrismaExceptionFilter());
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -30,8 +37,12 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
 
   SwaggerModule.setup('api/docs', app, document);
+
   app.useGlobalInterceptors(new LoggingInterceptor());
 
-  await app.listen(process.env.PORT ?? 3000);
+  const configService = app.get(ConfigService);
+
+  await app.listen(configService.get<number>('PORT') ?? 3000);
 }
+
 await bootstrap();
