@@ -1,10 +1,10 @@
 import { NestFactory } from '@nestjs/core';
+import { LoggingInterceptor } from './common/logging.interceptor.js';
 import { AppModule, ObserveInstrument } from './app.module.js';
 import 'dotenv/config';
 import { ValidationPipe } from '@nestjs/common';
 import { PrismaExceptionFilter } from './prisma/prisma-exception.filter.js';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -20,7 +20,7 @@ async function bootstrap() {
     }),
   );
 
- const config = new DocumentBuilder()
+  const config = new DocumentBuilder()
     .setTitle('Clínica Salud Integral')
     .setDescription('API de la clínica, migrada a NestJS')
     .setVersion('1.0')
@@ -30,6 +30,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
 
   SwaggerModule.setup('api/docs', app, document);
+  app.useGlobalInterceptors(new LoggingInterceptor());
 
   await app.listen(process.env.PORT ?? 3000);
 }
