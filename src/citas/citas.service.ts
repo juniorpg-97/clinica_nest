@@ -12,15 +12,24 @@ export class CitasService {
   async create(data: {
     pacienteId: number;
     medicoId: number;
-    fecha: Date;
-    hora: Date;
+    fecha: string;
+    hora: string;
   }) {
     const paciente = await this.pacientesService.findOne(data.pacienteId);
-    if (!paciente) throw new NotFoundException('El paciente no existe');
 
-    return this.prisma.cita.create({ data });
+    if (!paciente) {
+      throw new NotFoundException('El paciente no existe');
+    }
+
+    return this.prisma.cita.create({
+      data: {
+        pacienteId: data.pacienteId,
+        medicoId: data.medicoId,
+        fecha: new Date(data.fecha),
+        hora: new Date(data.hora),
+      },
+    });
   }
-
   findAll() {
     return this.prisma.cita.findMany();
   }

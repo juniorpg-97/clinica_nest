@@ -15,10 +15,13 @@ import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { RolesGuard } from '../auth/guards/roles.guard.js';
 import { Roles } from '../auth/decorators/roles.decorator.js';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Medicos')
+@ApiBearerAuth()
 @Controller('medicos')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('RECEPCIONISTA')
+@Roles('RECEPCIONISTA', 'GERENCIA')
 export class MedicosController {
   constructor(private readonly medicosService: MedicosService) {}
 

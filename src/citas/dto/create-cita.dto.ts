@@ -1,27 +1,20 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsEnum, IsInt } from 'class-validator';
-
-export enum EstadoCita {
-  PROGRAMADA = 'PROGRAMADA',
-  COMPLETADA = 'COMPLETADA',
-  CANCELADA = 'CANCELADA',
-}
+import { IsDateString, IsInt } from 'class-validator';
 
 export class CreateCitaDto {
   @ApiProperty({
-    example: '2026-09-25T10:00:00.000Z',
-    description: 'Fecha y hora programada para la cita',
+    example: '2026-09-25T00:00:00.000Z',
+    description: 'Fecha de la cita',
   })
   @IsDateString()
   fecha: string;
 
   @ApiProperty({
-    example: 'PROGRAMADA',
-    enum: EstadoCita,
-    description: 'Estado de la cita',
+    example: '2026-09-25T15:00:00.000Z',
+    description: 'Hora de la cita',
   })
-  @IsEnum(EstadoCita)
-  estado: EstadoCita;
+  @IsDateString()
+  hora: string;
 
   @ApiProperty({
     example: 1,

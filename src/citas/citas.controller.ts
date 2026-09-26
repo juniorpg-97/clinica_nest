@@ -4,7 +4,8 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { RolesGuard } from '../auth/guards/roles.guard.js';
-import { Roles } from '../auth/decorators/roles.decorator.js';
+
+import { CreateCitaDto } from './dto/create-cita.dto.js';
 
 @ApiTags('Citas')
 @ApiBearerAuth()
@@ -14,11 +15,17 @@ export class CitasController {
   constructor(private readonly citasService: CitasService) {}
 
   @Post()
-  create(@Body() body: any) {
+  @ApiOperation({
+    summary: 'Crear una cita',
+  })
+  create(@Body() body: CreateCitaDto) {
     return this.citasService.create(body);
   }
 
   @Get()
+  @ApiOperation({
+    summary: 'Ver todas las citas',
+  })
   findAll() {
     return this.citasService.findAll();
   }
